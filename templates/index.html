@@ -1,0 +1,14 @@
+{% extends "base_layout.html" %}
+{% block content %}
+
+
+{% if g.user.is_authenticated %}
+    <h1>Hello, {{ g.user.username }}</h1>
+    <a href="/logout">Logout</a>
+{% else %}
+    <h1>Main page</h1>
+    <a href="/login">Login</a>
+{% endif %}
+
+
+{% endblock %}

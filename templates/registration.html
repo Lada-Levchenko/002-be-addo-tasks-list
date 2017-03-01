@@ -1,0 +1,17 @@
+{% extends "base_layout.html" %}
+{% block content %}
+
+  <form method="POST" action="/registration">
+    {% if form.errors %}
+    {% for error in form.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    {% endif %}
+    {{ form.csrf_token }}
+    {{ form.username.label }} {{ form.username }}
+    {{ form.password.label }} {{ form.password }}
+    {{ form.confirm.label }} {{ form.confirm }}
+    <input type="submit" value="Go">
+  </form>
+
+{% endblock %}
