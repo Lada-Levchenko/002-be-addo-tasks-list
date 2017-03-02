@@ -52,3 +52,4 @@ class Task(BaseModel):
     user = pw.ForeignKeyField(User, related_name='tasks')
     text = pw.TextField()
     deadline_date = pw.DateField(default=datetime.date.today())
+    complete = pw.BooleanField(default=False)

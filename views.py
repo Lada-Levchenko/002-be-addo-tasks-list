@@ -4,7 +4,7 @@ from flask import g, request, redirect, url_for, render_template
 from flask_login import LoginManager, current_user, login_user, logout_user
 from models import User, Task, initialize_database
 
-from forms import RegistrationForm
+from forms import RegistrationForm, TaskForm, TaskEditForm
 
 app = Flask("TaskList")
 app.secret_key = 'super secret key'
@@ -26,7 +26,7 @@ def load_user(id):
 @app.route('/', methods=['GET'])
 def index():
     if g.user.is_authenticated:
-        tasks = Task.select(Task, User).join(User).where(User.id == g.user.get_id()).order_by(Task.deadline_date.desc())
+        tasks = Task.select(Task, User).join(User).where(User.id == g.user.get_id()).order_by(Task.deadline_date.asc())
         return render_template('index.html', tasks=tasks)
     return render_template('index.html')
 
@@ -72,6 +72,40 @@ def registration():
         return redirect(url_for('login'))
     return render_template('registration.html', form=form)
 
+
+@app.route('/task', methods=['GET', 'POST'])
+def task_create():
+    if not g.user.is_authenticated:
+        return redirect(url_for('index'))
+
+    form = TaskForm(request.form)
+    if request.method == 'GET':
+        return render_template('task.html', form=form, form_action="/task")
+
+    if form.validate_on_submit():
+        Task.create(user=g.user.get_id(), text=form.text.data, deadline_date=form.date.data)
+        return redirect(url_for('index'))
+    return render_template('task.html', form=form, form_action="/task")
+
+
+@app.route('/edit/task/<int:task_id>', methods=['GET', 'POST'])
+def task_edit(task_id):
+    if not g.user.is_authenticated:
+        return redirect(url_for('index'))
+
+    form = TaskEditForm(request.form)
+    if request.method == 'GET':
+        task = Task.filter(Task.id == task_id).first()
+        form.text.data = task.text
+        form.date.data = task.date
+        form.complete.data = task.complete
+        return render_template('task.html', form=form, form_action="/edit/task/" + task_id)
+
+    if form.validate_on_submit():
+        task_update = Task.update(text=form.text.data, deadline_date=form.date.data, complete=form.complete.data).where(Task.id == task_id)
+        task_update.execute()
+        return redirect(url_for('index'))
+    return render_template('task.html', form=form, form_action="/edit/task/" + task_id)
 
 if __name__ == "__main__":
     initialize_database()

@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>$Title$</title>
-</head>
-<body>
-$END$
-</body>
-</html>
+{% extends "base_layout.html" %}
+{% block content %}
+
+  <form method="POST" action="{{ form_action }}">
+    {% if form.errors %}
+    {% for error in form.errors %}
+      <li>{{ error }}</li>
+    {% endfor %}
+    {% endif %}
+    {{ form.csrf_token }}
+    {{ form.text.label }} {{ form.text }}
+    {{ form.date.label }} {{ form.date }}
+    <input type="submit" value="Go">
+  </form>
+
+{% endblock %}
