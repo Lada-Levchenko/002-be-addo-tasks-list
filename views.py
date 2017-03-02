@@ -2,7 +2,7 @@ from flask import Flask
 from flask import g, request, redirect, url_for, render_template
 
 from flask_login import LoginManager, current_user, login_user, logout_user
-from models import User, initialize_database
+from models import User, Task, initialize_database
 
 from forms import RegistrationForm
 
@@ -25,6 +25,9 @@ def load_user(id):
 
 @app.route('/', methods=['GET'])
 def index():
+    if g.user.is_authenticated:
+        tasks = Task.select(Task, User).join(User).where(User.id == g.user.get_id()).order_by(Task.deadline_date.desc())
+        return render_template('index.html', tasks=tasks)
     return render_template('index.html')
 
 

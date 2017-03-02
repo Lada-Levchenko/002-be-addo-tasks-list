@@ -5,9 +5,18 @@
 {% if g.user.is_authenticated %}
     <h1>Hello, {{ g.user.username }}</h1>
     <a href="/logout">Logout</a>
+    <br /><a href="/task">Create new task</a>
+    {% if tasks %}
+        {% for task in tasks %}
+          <li>{{ task.text }}
+              <br />{{ task.deadline_date }}
+          </li>
+        {% endfor %}
+    {% endif %}
 {% else %}
     <h1>Main page</h1>
-    <a href="/login">Login</a>
+    <a href="/login">Log In</a>
+    <br /><a href="/registration">Sign Up</a>
 {% endif %}
 
 

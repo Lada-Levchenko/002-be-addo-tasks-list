@@ -1,17 +1,22 @@
 import peewee as pw
-from flask_login._compat import unicode
 from playhouse.fields import PasswordField
+import datetime
 
 db = pw.SqliteDatabase('database.db')
 
 
 def initialize_database():
     User.create_table(fail_silently=True)
-
+    Task.create_table(fail_silently=True)
     try:
-        User.create(
+        user = User.create(
             username='root',
             password='123'
+        )
+
+        Task.create(
+            user=user,
+            text="Example"
         )
     except pw.IntegrityError:
         pass
@@ -37,7 +42,13 @@ class User(BaseModel):
         return False
 
     def get_id(self):
-        return unicode(self.id)
+        return str(self.id)
 
     def __repr__(self):
         return '<User %r>' % self.username
+
+
+class Task(BaseModel):
+    user = pw.ForeignKeyField(User, related_name='tasks')
+    text = pw.TextField()
+    deadline_date = pw.DateField(default=datetime.date.today())
