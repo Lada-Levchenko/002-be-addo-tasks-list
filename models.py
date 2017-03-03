@@ -53,3 +53,6 @@ class Task(BaseModel):
     text = pw.TextField()
     deadline_date = pw.DateField(default=datetime.date.today())
     complete = pw.BooleanField(default=False)
+
+    def get_id(self):
+        return str(self.id)

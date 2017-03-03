@@ -6,6 +6,7 @@ from models import User, Task, initialize_database
 
 from forms import RegistrationForm, TaskForm, TaskEditForm
 
+
 app = Flask("TaskList")
 app.secret_key = 'super secret key'
 
@@ -39,7 +40,7 @@ def login():
     username = request.form['username']
     password = request.form['password']
 
-    registered_user = User.filter(User.username == username).first()
+    registered_user = User.get(User.username == username)
 
     if registered_user is None:
         return redirect(url_for('login'))  # redirect back to login page if user wasn't found
@@ -64,7 +65,7 @@ def registration():
         return render_template('registration.html', form=form)
 
     if form.validate_on_submit():
-        registered_user = User.filter(User.username == form.username.data).first()
+        registered_user = User.get(User.username == form.username.data)
         if registered_user is None:
             registered_user = User.create(username=form.username.data, password=form.password.data)
             login_user(registered_user)
@@ -93,13 +94,17 @@ def task_edit(task_id):
     if not g.user.is_authenticated:
         return redirect(url_for('index'))
 
+    try:
+        task = Task.get(Task.id == task_id, Task.user == g.user.get_id())
+    except Task.DoesNotExist:
+        return redirect(url_for('index'))
+
     form = TaskEditForm(request.form)
     if request.method == 'GET':
-        task = Task.filter(Task.id == task_id).first()
         form.text.data = task.text
-        form.date.data = task.date
+        form.date.data = task.deadline_date
         form.complete.data = task.complete
-        return render_template('task.html', form=form, form_action="/edit/task/" + task_id)
+        return render_template('task.html', form=form, form_action="/edit/task/" + str(task_id))
 
     if form.validate_on_submit():
         task_update = Task.update(text=form.text.data, deadline_date=form.date.data, complete=form.complete.data).where(Task.id == task_id)

@@ -10,6 +10,7 @@
         {% for task in tasks %}
           <li>{{ task.text }}
               <br />{{ task.deadline_date }}
+              <br /><a href="{{ '/edit/task/'|safe + task.get_id()|e }}">edit</a>
           </li>
         {% endfor %}
     {% endif %}
