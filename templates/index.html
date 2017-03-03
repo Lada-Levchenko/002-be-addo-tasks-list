@@ -1,19 +1,44 @@
 {% extends "base_layout.html" %}
 {% block content %}
 
+{% macro build_list(tasks) %}
+<ul>
+{% for task in tasks %}
+   <li>{{ task.text }}
+    <br />{{ task.deadline_date }}
+    <br /><a href="{{ '/edit/task/'|safe + task.get_id()|e }}">edit</a>
+    <br /><a href="{{ '/delete/task/'|safe + task.get_id()|e }}">delete</a>
+   </li>
+{% endfor %}
+</ul>
+{% endmacro %}
 
 {% if g.user.is_authenticated %}
     <h1>Hello, {{ g.user.username }}</h1>
     <a href="/logout">Logout</a>
     <br /><a href="/task">Create new task</a>
-    {% if tasks %}
-        {% for task in tasks %}
-          <li>{{ task.text }}
-              <br />{{ task.deadline_date }}
-              <br /><a href="{{ '/edit/task/'|safe + task.get_id()|e }}">edit</a>
-          </li>
-        {% endfor %}
+
+    {% if unfinished_tasks %}
+      <h3>Unfinished tasks:</h3>
+      <div>
+        {{ build_list(unfinished_tasks) }}
+      </div>
     {% endif %}
+
+    {% if current_tasks %}
+      <h3>Current tasks:</h3>
+      <div>
+        {{ build_list(current_tasks) }}
+      </div>
+    {% endif %}
+
+    {% if future_tasks %}
+      <h3>Future tasks:</h3>
+      <div>
+        {{ build_list(future_tasks) }}
+      </div>
+    {% endif %}
+
 {% else %}
     <h1>Main page</h1>
     <a href="/login">Log In</a>

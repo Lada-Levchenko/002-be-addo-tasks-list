@@ -5,6 +5,7 @@ from flask_login import LoginManager, current_user, login_user, logout_user
 from models import User, Task, initialize_database
 
 from forms import RegistrationForm, TaskForm, TaskEditForm
+import datetime
 
 
 app = Flask("TaskList")
@@ -27,8 +28,13 @@ def load_user(id):
 @app.route('/', methods=['GET'])
 def index():
     if g.user.is_authenticated:
+        today = datetime.date.today()
         tasks = Task.select(Task, User).join(User).where(User.id == g.user.get_id()).order_by(Task.deadline_date.asc())
-        return render_template('index.html', tasks=tasks)
+        unfinished_tasks = [task for task in tasks if task.deadline_date < today]
+        current_tasks = [task for task in tasks if task.deadline_date == today]
+        future_tasks = [task for task in tasks if task.deadline_date > today]
+        data = {'unfinished_tasks': unfinished_tasks, 'current_tasks': current_tasks, 'future_tasks': future_tasks}
+        return render_template('index.html', **data)
     return render_template('index.html')
 
 
@@ -111,6 +117,21 @@ def task_edit(task_id):
         task_update.execute()
         return redirect(url_for('index'))
     return render_template('task.html', form=form, form_action="/edit/task/" + task_id)
+
+
+@app.route('/delete/task/<int:task_id>', methods=['GET'])
+def task_delete(task_id):
+    if not g.user.is_authenticated:
+        return redirect(url_for('index'))
+
+    try:
+        task = Task.get(Task.id == task_id, Task.user == g.user.get_id())
+    except Task.DoesNotExist:
+        return redirect(url_for('index'))
+
+    task_delete = Task.delete().where(Task.id == task_id)
+    task_delete.execute()
+    return redirect(url_for('index'))
 
 if __name__ == "__main__":
     initialize_database()

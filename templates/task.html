@@ -10,6 +10,9 @@
     {{ form.csrf_token }}
     {{ form.text.label }} {{ form.text }}
     {{ form.date.label }} {{ form.date }}
+    {% if form.complete %}
+      {{ form.complete.label }} {{ form.complete }}
+    {% endif %}
     <input type="submit" value="Go">
   </form>
 
