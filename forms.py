@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, BooleanField
+from wtforms import StringField, PasswordField, BooleanField, TextAreaField
 from wtforms.validators import DataRequired, EqualTo
 from wtforms.fields.html5 import DateField
 
@@ -11,7 +11,7 @@ class RegistrationForm(FlaskForm):
 
 
 class TaskForm(FlaskForm):
-    text = StringField('Task', validators=[DataRequired()])
+    text = TextAreaField('Task', validators=[DataRequired()])
     date = DateField('Date', format='%Y-%m-%d', validators=[DataRequired()])
 
 

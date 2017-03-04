@@ -137,3 +137,6 @@ crashlytics.properties
 crashlytics-build.properties
 fabric.properties
 
+/bower_components/
+/templates/css/bootstrap.min.css
+/static/css/bootstrap.min.css

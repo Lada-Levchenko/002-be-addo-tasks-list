@@ -46,7 +46,7 @@ def login():
     username = request.form['username']
     password = request.form['password']
 
-    registered_user = User.get(User.username == username)
+    registered_user = User.filter(User.username == username).first()
 
     if registered_user is None:
         return redirect(url_for('login'))  # redirect back to login page if user wasn't found
@@ -71,7 +71,7 @@ def registration():
         return render_template('registration.html', form=form)
 
     if form.validate_on_submit():
-        registered_user = User.get(User.username == form.username.data)
+        registered_user = User.filter(User.username == form.username.data).first()
         if registered_user is None:
             registered_user = User.create(username=form.username.data, password=form.password.data)
             login_user(registered_user)

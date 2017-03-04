@@ -1,49 +1,60 @@
 {% extends "base_layout.html" %}
 {% block content %}
 
-{% macro build_list(tasks) %}
-<ul>
+{% macro build_list(tasks, bg) %}
 {% for task in tasks %}
-   <li>{{ task.text }}
-    <br />{{ task.deadline_date }}
-    <br /><a href="{{ '/edit/task/'|safe + task.get_id()|e }}">edit</a>
-    <br /><a href="{{ '/delete/task/'|safe + task.get_id()|e }}">delete</a>
-   </li>
+   <div class="text-center {%if task.complete %}bg-success{% else %}{{ bg }}{% endif %}">
+       <a href="{{ '/delete/task/'|safe + task.get_id()|e }}" class="close" aria-label="Close"><span aria-hidden="true">&times;</span></a>
+       <h4>{{ task.text }}</h4>
+       <p>{{ task.deadline_date }}</p>
+       <a href="{{ '/edit/task/'|safe + task.get_id()|e }}">edit</a>
+   </div>
 {% endfor %}
-</ul>
 {% endmacro %}
 
 {% if g.user.is_authenticated %}
+<div class="row">
     <h1>Hello, {{ g.user.username }}</h1>
     <a href="/logout">Logout</a>
     <br /><a href="/task">Create new task</a>
-
+</div>
+<div class="row">
     {% if unfinished_tasks %}
+    <div class="col-md-4">
       <h3>Unfinished tasks:</h3>
       <div>
-        {{ build_list(unfinished_tasks) }}
+        {{ build_list(unfinished_tasks, "bg-danger") }}
       </div>
+    </div>
     {% endif %}
 
     {% if current_tasks %}
+    <div class="col-md-4">
       <h3>Current tasks:</h3>
       <div>
-        {{ build_list(current_tasks) }}
+        {{ build_list(current_tasks, "bg-info") }}
       </div>
+    </div>
     {% endif %}
 
     {% if future_tasks %}
+    <div class="col-md-4">
       <h3>Future tasks:</h3>
       <div>
-        {{ build_list(future_tasks) }}
+        {{ build_list(future_tasks, "bg-warning") }}
       </div>
+    </div>
     {% endif %}
+</div>
 
 {% else %}
+<div class="row">
     <h1>Main page</h1>
     <a href="/login">Log In</a>
     <br /><a href="/registration">Sign Up</a>
+</div>
 {% endif %}
+
 
 
 {% endblock %}

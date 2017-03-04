@@ -1,0 +1,21 @@
+{
+  "name": "002-be-addo-day-manager",
+  "homepage": "https://github.com/lionder/002-be-addo-tasks-list",
+  "authors": [
+    "lionder <lionder.97@bk.ru>"
+  ],
+  "description": "",
+  "main": "",
+  "license": "MIT",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootstrap": "^3.3.7"
+  }
+}
